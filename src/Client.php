@@ -440,7 +440,7 @@ class Client {
     * @param int $order_id      The order ID given by `/order/new`.
     * @return mixed
     */
-    public function get_order($order_id) {
+    public function get_order(int $order_id) {
     	$request = $this->endpoint('order', 'status');
 
     	$data = array(
@@ -931,6 +931,8 @@ class Client {
                 $data['intermediary_bank_swift']    = array_key_exists('im_bank_swift', $bank_data) ? $bank_data['im_bank_swift'] : '';
 
                 break;
+			default:
+				throw new \Exception("Withdrawal for $withdraw_type not implemented");
     	}
 
     	return $this->send_auth_request($data);
@@ -1103,11 +1105,12 @@ class Client {
     	$ch = curl_init();
     	$query = '';
 
-    	if (count($params)) {
+    	if ($params !== null && count($params)) {
             $query = '?' . http_build_query($params);
     	}
 
     	$url = self::API_URL . $request . $query;
+
 
     	curl_setopt_array($ch, array(
             CURLOPT_URL             => $url,
